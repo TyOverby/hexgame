@@ -1,0 +1,25 @@
+[package]
+name = "hexgame"
+version = "0.1.0"
+authors = ["Ty Overby <ty@pre-alpha.com>"]
+
+[[bin]]
+name = "vis"
+path = "./src/vis.rs"
+
+[[bin]]
+name = "survival"
+path = "./src/survival.rs"
+
+[[bin]]
+name = "play"
+path = "./src/play.rs"
+
+[dependencies.hexagon]
+path = "../hexagon"
+
+[dependencies.lux]
+path = "../lux"
+
+[dependencies]
+rand = "0.3.14"
