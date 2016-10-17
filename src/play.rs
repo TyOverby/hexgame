@@ -28,7 +28,7 @@ fn draw_hex(frame: &mut Frame, screen: &ScreenSpace, hex: &HexPosition, color: [
         get_color_vertex(hex_positions[3], color),
         get_color_vertex(hex_positions[4], color),
         get_color_vertex(hex_positions[5], color),
-    ], None, None);
+    ], None, None).unwrap();
 }
 
 fn render_game(frame: &mut Frame, state: &GameState, screen: &ScreenSpace) {
@@ -54,7 +54,7 @@ fn main() {
         slot_score: 1.0,
         double_score: 1.0,
     }, 3);
-    let mut ai = RankerAi::new(NullRanker, 3);
+    //let mut ai = RankerAi::new(NullRanker, 3);
 
     let screenspace = ScreenSpace {
         size: 50.0,
@@ -76,14 +76,17 @@ fn main() {
         if window.events().filter(|e| match e { &Event::MouseUp(_) => true, _ => false}).count() != 0 {
             if game.map().could_contain(&near_cursor) {
                 println!("{:?}", game.make_move(near_cursor));
+                println!("{:?}", game.is_over());
                 println!("# triads: {}", FeatureRanker::count_triads(&game, Player::Red));
                 println!("# windows: {}", FeatureRanker::count_windows(&game, Player::Red));
                 println!("# slots: {}", FeatureRanker::count_slots(&game, Player::Red));
                 println!("# doubles: {}", FeatureRanker::count_doubles(&game, Player::Red));
                 println!("");
 
+                /*
                 let next = ai.choose(&game, game.current_player());
                 game.make_move(&next);
+                */
             }
         }
     }

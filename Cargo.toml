@@ -23,3 +23,4 @@ path = "../lux"
 
 [dependencies]
 rand = "0.3.14"
+pbr = "0.3.1"
