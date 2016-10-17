@@ -137,8 +137,22 @@ fn round(round_id: u32, a: FeatureRankerAi, b: FeatureRankerAi, rec_depth: usize
 
 const REC_DEPTH: usize = 4;
 fn main() {
-    let mut a = random_ai(REC_DEPTH);
-    let mut b = random_ai(REC_DEPTH);
+    let mut a = RankerAi::new(
+        FeatureRanker {
+            window_score: 1.1651653,
+            triad_score: -0.70962214,
+            slot_score: 0.55274326,
+            double_score: -0.008286457
+        }, 4);
+
+    let mut b = RankerAi::new(
+        FeatureRanker {
+            window_score: 1.0274351,
+            triad_score: -0.0024032395,
+            slot_score: -0.05915,
+            double_score: 0.034118164
+        }, 4);
+
     for i in 0 .. {
         let (ar, br) = round(i, a, b, REC_DEPTH);
         a = ar;
