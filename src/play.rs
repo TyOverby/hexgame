@@ -46,7 +46,10 @@ fn render_game(frame: &mut Frame, state: &GameState, screen: &ScreenSpace) {
 }
 
 fn main() {
-    let mut window = Window::new_with_defaults().unwrap();
+    let mut window = match Window::new_with_defaults() {
+        Ok(window) => window,
+        Err(e) => panic!("oh fuck: {}", e),
+    };
 
     let mut game = GameState::new();
 
@@ -64,7 +67,7 @@ fn main() {
     };
 
     while window.is_open() {
-        screenspace.origin = (window.width() / 2.0, window.height() / 2.0);
+        //screenspace.origin = (window.width() / 2.0, window.height() / 2.0);
 
         let mut frame = window.cleared_frame((0.0, 0.0, 0.0));
         let (x, y) = window.mouse_pos();
