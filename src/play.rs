@@ -46,7 +46,10 @@ fn render_game(frame: &mut Frame, state: &GameState, screen: &ScreenSpace) {
 }
 
 fn main() {
-    let mut window = Window::new_with_defaults().unwrap();
+    let mut window = match Window::new_with_defaults() {
+        Ok(window) => window,
+        Err(e) => panic!("oh fuck: {}", e),
+    };
 
     let mut game = GameState::new();
 
