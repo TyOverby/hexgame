@@ -54,10 +54,10 @@ fn main() {
     let mut game = GameState::new();
 
     let mut ai = RankerAi::new(FeatureRanker {
-        window_score: 2.0,
-        triad_score: 5.0,
-        slot_score: 1.0,
-        double_score: 1.0,
+        window_score: 1.7,
+        triad_score: -3.5,
+        slot_score: 1.2,
+        double_score: 2.2,
     }, 4);
 
     let screenspace = ScreenSpace {
