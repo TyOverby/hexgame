@@ -139,18 +139,18 @@ const REC_DEPTH: usize = 4;
 fn main() {
     let mut a = RankerAi::new(
         FeatureRanker {
-            window_score: 1.1651653,
-            triad_score: -0.70962214,
-            slot_score: 0.55274326,
-            double_score: -0.008286457
+		window_score: 1.1696554,
+		triad_score: -3.5195274,
+		slot_score: 1.1817378,
+		double_score: 2.168134
         }, 4);
 
     let mut b = RankerAi::new(
         FeatureRanker {
-            window_score: 1.0274351,
-            triad_score: -0.0024032395,
-            slot_score: -0.05915,
-            double_score: 0.034118164
+		window_score: 1.6561589,
+		triad_score: -4.713683,
+		slot_score: 1.4023619,
+		double_score: 2.6551623
         }, 4);
 
     for i in 0 .. {
