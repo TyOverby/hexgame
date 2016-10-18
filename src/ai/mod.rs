@@ -79,7 +79,6 @@ impl <R: Ranker> Ai for RankerAi<R> {
         let beta = INFINITY;
         let (r, p) = eval(self, state.clone(), rec_lim as i32, Score(alpha, 0), Score(beta, 0), player);
 
-        println!("{:?}", r);
         p.unwrap()
     }
 }

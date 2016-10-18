@@ -88,40 +88,43 @@ fn round(round_id: u32, a: FeatureRankerAi, b: FeatureRankerAi, rec_depth: usize
     let inset: Vec<_> = vec![a, b, c, d, e, f, g, h].into_iter().map(RefCell::new).collect();
     let mut outset: Vec<_> = (0 .. inset.len()).map(|i| (0, i)).collect();
 
-    let mut pbr = pbr::ProgressBar::new((inset.len() * inset.len() - inset.len()) as u64);
+    let mut pbr = pbr::ProgressBar::new((inset.len() * inset.len() - inset.len()) as u64 * 2 * 2);
 
-    for (i, ai_i) in inset.iter().enumerate() {
-        for (k, ai_k) in inset.iter().enumerate() {
-            if i == k { continue }
-            pbr.inc();
-            let mut ai_i = ai_i.borrow_mut();
-            let mut ai_k = ai_k.borrow_mut();
+    for _ in 0 .. 2 {
+        for (i, ai_i) in inset.iter().enumerate() {
+            for (k, ai_k) in inset.iter().enumerate() {
+                if i == k { continue }
+                let mut ai_i = ai_i.borrow_mut();
+                let mut ai_k = ai_k.borrow_mut();
 
-            println!("\nnew game");
-            match play_game(&mut *ai_i, &mut *ai_k) {
-                GameResult::Player1 => {
-                    outset[i].0 += 1;
-                    outset[k].0 -= 1;
+                println!("\nnew game");
+                match play_game(&mut *ai_i, &mut *ai_k) {
+                    GameResult::Player1 => {
+                        outset[i].0 += 1;
+                        outset[k].0 -= 1;
+                    }
+                    GameResult::Player2 => {
+                        outset[i].0 -= 1;
+                        outset[k].0 += 1;
+                    }
+                    GameResult::Tie => {}
                 }
-                GameResult::Player2 => {
-                    outset[i].0 -= 1;
-                    outset[k].0 += 1;
-                }
-                GameResult::Tie => {}
-            }
+                pbr.inc();
 
-            // invert order
-            println!("new game");
-            match play_game(&mut *ai_k, &mut *ai_i) {
-                GameResult::Player1 => {
-                    outset[i].0 -= 1;
-                    outset[k].0 += 1;
+                // invert order
+                println!("new game");
+                match play_game(&mut *ai_k, &mut *ai_i) {
+                    GameResult::Player1 => {
+                        outset[i].0 -= 1;
+                        outset[k].0 += 1;
+                    }
+                    GameResult::Player2 => {
+                        outset[i].0 += 1;
+                        outset[k].0 -= 1;
+                    }
+                    GameResult::Tie => {}
                 }
-                GameResult::Player2 => {
-                    outset[i].0 += 1;
-                    outset[k].0 -= 1;
-                }
-                GameResult::Tie => {}
+                pbr.inc();
             }
         }
     }
