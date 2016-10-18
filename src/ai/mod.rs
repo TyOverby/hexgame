@@ -2,11 +2,9 @@ use super::*;
 use hexagon::HexPosition;
 use hexagon::grid::{Grid, HexGrid, Map};
 use ::std::f32::{INFINITY, NEG_INFINITY};
-use std::cmp::{PartialOrd, Ordering};
 
-const WIN: f32 = 1000.0;
-const LOSS: f32 = -1000.0;
-const MOVE_PENALTY: f32 = 0.1;
+const WIN: f32 = INFINITY;
+const LOSS: f32 = NEG_INFINITY;
 
 pub trait Ai {
     fn choose(&mut self, state: &GameState, player: Player) -> HexPosition;
@@ -31,54 +29,13 @@ impl <R: Ranker> RankerAi<R> {
     }
 }
 
-struct Selection {
-    best_value: f32,
-    best_pos: Option<HexPosition>,
-    odds_of_replacement: f32,
-}
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
+struct Score(f32, i32);
 
-impl Selection {
-    fn new(starting: f32) -> Selection {
-        Selection {
-            best_value: starting,
-            best_pos: None,
-            odds_of_replacement: 1.0,
-        }
-    }
-}
-
-impl Selection {
-    fn put_internal(&mut self, value: f32, position: HexPosition, ordering: Ordering) {
-        match self.best_value.partial_cmp(&value) {
-            Some(o) if ordering == o => {
-                self.best_value = value;
-                self.odds_of_replacement = 0.5;
-                self.best_pos = Some(position);
-            },
-            Some(Ordering::Equal) => {
-                if ::rand::random::<f32>() < self.odds_of_replacement {
-                    self.best_pos = Some(position);
-                }
-                self.odds_of_replacement /= 2.0;
-            }
-            Some(_) => { }
-            None => {  }
-        }
-    }
-
-    fn put_max(&mut self, value: f32, position: HexPosition) {
-        self.put_internal(value, position, Ordering::Less);
-    }
-
-    fn put_min(&mut self, value: f32, position: HexPosition) {
-        self.put_internal(value, position, Ordering::Greater);
-    }
-
-    fn value(&self) -> f32 {
-        self.best_value
-    }
-    fn position(&self) -> Option<HexPosition> {
-        self.best_pos.clone()
+impl ::std::ops::Neg for Score {
+    type Output = Score;
+    fn neg(self) -> Score {
+        Score(-self.0, -self.1)
     }
 }
 
@@ -87,13 +44,14 @@ impl <R: Ranker> Ai for RankerAi<R> {
         fn eval<R: Ranker>(
             rai: &mut RankerAi<R>,
             state: GameState,
-            depth: usize,
-            mut alpha: f32,
-            beta: f32,
+            depth: i32,
+            mut alpha: Score,
+            beta: Score,
             player: Player)
-            -> (f32, Option<HexPosition>) {
+            -> (Score, Option<HexPosition>) {
                 if depth == 0 || state.map().is_full() || state.is_game_over() {
-                    return (rai.ranker.rank(&state, player) - rai.ranker.rank(&state, player.inverse()), None);
+                    let score = Score(rai.ranker.rank(&state, player) - rai.ranker.rank(&state, player.inverse()), -depth);
+                    return (score, None);
                 }
 
                 let available_moves = state.map().grid().iter().filter(|pos| !state.map().contains(pos));
@@ -103,7 +61,9 @@ impl <R: Ranker> Ai for RankerAi<R> {
                     let (score, _) = eval(rai, state, depth - 1, -beta, -alpha, player.inverse());
                     let score = -score;
                     if score >= beta {
-                        return (beta, Some(mv));
+                        best = Some(mv);
+                        alpha = beta;
+                        break;
                     }
                     if score > alpha {
                         best = Some(mv);
@@ -117,9 +77,9 @@ impl <R: Ranker> Ai for RankerAi<R> {
         let rec_lim = self.recursion_limit;
         let alpha = NEG_INFINITY;
         let beta = INFINITY;
-        let (r, p) = eval(self, state.clone(), rec_lim, alpha, beta, player);
+        let (r, p) = eval(self, state.clone(), rec_lim as i32, Score(alpha, 0), Score(beta, 0), player);
 
-        println!("{}", r);
+        println!("{:?}", r);
         p.unwrap()
     }
 }

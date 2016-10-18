@@ -57,7 +57,7 @@ fn main() {
         double_score: 1.0,
     }, 4);
 
-    let mut screenspace = ScreenSpace {
+    let screenspace = ScreenSpace {
         size: 50.0,
         origin: (500.0, 500.0),
     };
@@ -103,5 +103,5 @@ fn display_gameover(mut frame: Frame, player: Player) {
         h: 50.0,
         color: player.color(),
         .. Default::default()
-    });
+    }).unwrap();
 }
