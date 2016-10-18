@@ -89,8 +89,7 @@ impl <R: Ranker> Ai for RankerAi<R> {
             state: GameState,
             depth: usize,
             mut alpha: f32,
-            mut beta: f32,
-            maximizing_player: bool,
+            beta: f32,
             player: Player)
             -> (f32, Option<HexPosition>) {
                 if depth == 0 || state.map().is_full() || state.is_game_over() {
@@ -98,57 +97,28 @@ impl <R: Ranker> Ai for RankerAi<R> {
                 }
 
                 let available_moves = state.map().grid().iter().filter(|pos| !state.map().contains(pos));
+                let mut best = None;
 
-                let mut best;
-                if maximizing_player {
-                    best = Selection::new(NEG_INFINITY);
-                    for mv in available_moves {
-                        let mut state = state.clone();
-                        let res = state.make_move(&mv);
-                        debug_assert!(res != MoveResult::Bad);
-
-                        let (v, _) = eval(rai, state, depth - 1, alpha, beta, false, player);
-                        best.put_max(v, mv);
-                        alpha = alpha.max(best.value());
-                        if beta < alpha {
-                            break;
-                        }
+                for (state, mv) in available_moves.map(|mv| (state.with_move(&mv), mv)) {
+                    let (score, _) = eval(rai, state, depth - 1, -beta, -alpha, player.inverse());
+                    let score = -score;
+                    if score >= beta {
+                        return (beta, Some(mv));
                     }
-                } else {
-                    best = Selection::new(INFINITY);
-                    for mv in available_moves {
-                        let mut state = state.clone();
-                        let res = state.make_move(&mv);
-                        debug_assert!(res != MoveResult::Bad);
-
-                        let (v, _) = eval(rai, state, depth - 1, alpha, beta, true, player);
-                        best.put_min(v, mv);
-                        beta = beta.min(best.value());
-                        if beta <= alpha {
-                            break;
-                        }
+                    if score > alpha {
+                        best = Some(mv);
+                        alpha = score;
                     }
                 }
 
-
-                let score = best.value();
-                /*
-                // if we are ahead, try to clinch the victory as soon as possible,
-                let score = if score > 0.0 {
-                    score - MOVE_PENALTY
-                }
-                // otherwise, try to prolong the game
-                else {
-                    score + MOVE_PENALTY
-                };*/
-
-                return (score, best.position());
+                return (alpha, best);
             }
 
         let rec_lim = self.recursion_limit;
         let alpha = NEG_INFINITY;
         let beta = INFINITY;
-        let (r, p) = eval(self, state.clone(), rec_lim, alpha, beta, true, player);
+        let (r, p) = eval(self, state.clone(), rec_lim, alpha, beta, player);
+
         println!("{}", r);
         p.unwrap()
     }

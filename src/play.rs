@@ -56,7 +56,6 @@ fn main() {
         slot_score: 1.0,
         double_score: 1.0,
     }, 4);
-    //let mut ai = RankerAi::new(NullRanker, 3);
 
     let mut screenspace = ScreenSpace {
         size: 50.0,

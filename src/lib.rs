@@ -36,6 +36,12 @@ impl GameState {
         }
     }
 
+    pub fn with_move(&self, pos: &HexPosition) -> GameState {
+        let mut c = self.clone();
+        c.make_move(pos);
+        c
+    }
+
     pub fn make_move(&mut self, pos: &HexPosition) -> MoveResult {
         if self.map.could_contain(&pos) && !self.map.contains(&pos) {
             self.map.insert(pos, self.current_player);
