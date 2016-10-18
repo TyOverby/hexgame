@@ -132,6 +132,7 @@ impl <R: Ranker> Ai for RankerAi<R> {
 
 
                 let score = best.value();
+                /*
                 // if we are ahead, try to clinch the victory as soon as possible,
                 let score = if score > 0.0 {
                     score - MOVE_PENALTY
@@ -139,7 +140,7 @@ impl <R: Ranker> Ai for RankerAi<R> {
                 // otherwise, try to prolong the game
                 else {
                     score + MOVE_PENALTY
-                };
+                };*/
 
                 return (score, best.position());
             }
@@ -147,7 +148,8 @@ impl <R: Ranker> Ai for RankerAi<R> {
         let rec_lim = self.recursion_limit;
         let alpha = NEG_INFINITY;
         let beta = INFINITY;
-        let (_, p) = eval(self, state.clone(), rec_lim, alpha, beta, true, player);
+        let (r, p) = eval(self, state.clone(), rec_lim, alpha, beta, true, player);
+        println!("{}", r);
         p.unwrap()
     }
 }

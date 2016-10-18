@@ -55,7 +55,7 @@ fn main() {
         triad_score: 5.0,
         slot_score: 1.0,
         double_score: 1.0,
-    }, 3);
+    }, 4);
     //let mut ai = RankerAi::new(NullRanker, 3);
 
     let mut screenspace = ScreenSpace {
@@ -64,7 +64,7 @@ fn main() {
     };
 
     while window.is_open() {
-        screenspace.origin = (window.width() / 2.0, window.height() / 2.0);
+        //screenspace.origin = (window.width() / 2.0, window.height() / 2.0);
 
         let mut frame = window.cleared_frame((0.0, 0.0, 0.0));
         let (x, y) = window.mouse_pos();
