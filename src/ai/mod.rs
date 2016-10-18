@@ -130,7 +130,18 @@ impl <R: Ranker> Ai for RankerAi<R> {
                     }
                 }
 
-                return (best.value() - MOVE_PENALTY, best.position());
+
+                let score = best.value();
+                // if we are ahead, try to clinch the victory as soon as possible,
+                let score = if score > 0.0 {
+                    score - MOVE_PENALTY
+                }
+                // otherwise, try to prolong the game
+                else {
+                    score + MOVE_PENALTY
+                };
+
+                return (score, best.position());
             }
 
         let rec_lim = self.recursion_limit;
